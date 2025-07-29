@@ -1,0 +1,39 @@
+save_path: ../data/LAI_FAPAR
+
+tiles:
+  T31UFT:
+    west: 4.436120625114681
+    south: 51.324523354307196
+    east: 6.077757925298724
+    north: 52.34135509678961
+  T31UGS:
+    west: 6.5
+    south: 52.0
+    east: 7.5
+    north: 53.0
+  T32UMT:
+    west: 6.5
+    south: 51.5
+    east: 7.5
+    north: 52.5
+  T32ULT:
+    west: 6.5
+    south: 51.0
+    east: 7.5
+    north: 52.0
+
+dates:
+  - "2022-05-10"
+  - "2022-05-11"
+  - "2022-05-12"
+  - "2022-05-13"
+  - "2022-05-14"
+
+products:
+  LAI:
+    collection: "TERRASCOPE_S2_LAI_V2"
+    band: "LAI_10M"
+  FAPAR:
+    collection: "TERRASCOPE_S2_FAPAR_V2"
+    band: "FAPAR_10M"
+
