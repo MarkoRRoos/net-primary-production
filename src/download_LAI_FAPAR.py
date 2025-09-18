@@ -51,17 +51,20 @@ class ProductDownloader:
                 temporal_extent=[date, date],
                 bands=[info["band"]]
             )
+            #print(self.connection.list_collections())#--- DEBUGGING ---
             filename = f"{product_name}_{tile_id}_{date}.tiff"
             full_path = os.path.join(self.save_path, filename)
-            cube.download(full_path, format="GTiff")
+            cube.download(full_path, format="GTiff", on_response_headers=lambda x: print(x))
             print(f"Saved as {full_path}")
         except Exception as e:
             print(f"Failed: {product_name} - {tile_id} - {date} → {e}")
+            #traceback.print_exc() ---- DEBUGGING ---
 
     def download_all(self) -> None:
         """
         Iterates over all combinations of products, tiles, and dates to trigger downloads.
         """
+        #print("Products dict looks like:", self.products)
         for product_name, info in self.products.items():
             for tile_id, bbox in self.tiles.items():
                 for date in self.dates:

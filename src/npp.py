@@ -7,6 +7,7 @@ import rioxarray as rxr
 import pandas as pd
 import logging
 from .utils import ensure_dir
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ def compute_npp(
     estk_path: Path,
     conversion_df: pd.DataFrame,
     output_path: Path,
+    plot_estk: bool = True,  
 ) -> xr.DataArray:
     """Calculate Net Primary Productivity (NPP) raster based on input datasets.
 
@@ -65,9 +67,26 @@ def compute_npp(
     # Align all rasters to LAI grid
     logger.info("Aligning rasters to LAI grid")
     temp = temp.rio.reproject_match(lai)
+    # print("Temperature min/max na align:", float(temp.min()), float(temp.max()))
     ssrd = ssrd.rio.reproject_match(lai)
     fapar = fapar.rio.reproject_match(lai)
     estk = estk.rio.reproject_match(lai)
+
+     # --- NEW: Plot ESTK raster and class masks ---
+    if plot_estk:
+        # Identify ESTK classes actually present and valid
+        estk_classes = np.unique(estk.values[~np.isnan(estk.values)]).astype(int)
+        valid_classes = [cls for cls in estk_classes if cls in conversion_df.index]
+
+        if not valid_classes:
+            logger.warning("No valid ESTK classes found for plotting.")
+        else:
+            # Plot the ESTK raster showing only valid classes
+            plt.figure(figsize=(8, 6))
+            estk_masked = estk.where(np.isin(estk, valid_classes))
+            estk_masked.plot(cmap="tab20")
+            plt.title("ESTK Classes (Valid Only)")
+            plt.show()
 
     # Prepare NPP output array with NaNs
     npp_result = xr.full_like(lai, np.nan)
@@ -91,17 +110,24 @@ def compute_npp(
         eps_max = float(params["eps_max"])
         t_min = float(params["T_min"])
         t_max = float(params["T_max"])
+        fake_max = 50 #TODO: remove this, just for testing
 
         temp_masked = temp.where(mask)
         fapar_masked = fapar.where(mask)
         ssrd_masked = ssrd.where(mask)
 
         # Temperature factor computation (bounded by T_min and T_max)
-        temp_factor = ((temp_masked - t_min) * (t_max - temp_masked)) / ((t_max - t_min) ** 2)
+        #temp_factor = ((temp_masked - t_min) * (t_max - temp_masked)) / ((t_max - t_min) ** 2) #The problem must occur here
+        temp_factor = ((temp_masked - t_min) * (fake_max - temp_masked)) / ((t_max - t_min) ** 2) 
+        # print("temp min & max",temp_masked.min(), temp_masked.max())
         temp_factor = temp_factor.clip(min=0)
+        # print(f"Temp min/max: {float(temp.min())}, {float(temp.max())}")
+        # print(f"T_min/T_max from conversion table: {t_min}, {t_max}")
+        # print(f"Temp factor min/max: {float(temp_factor.min())}, {float(temp_factor.max())}")
+
 
         # Compute GPP and then NPP
-        gpp = eps_max * fapar_masked * ssrd_masked
+        gpp = eps_max * fapar_masked * ssrd_masked #TODO: add LAI and full formula
         npp_class = gpp * temp_factor
 
         # Insert class-specific NPP values into result raster

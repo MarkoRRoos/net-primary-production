@@ -28,6 +28,22 @@ dates:
   - "2022-05-12"
   - "2022-05-13"
   - "2022-05-14"
+  - "2022-05-15"
+  - "2022-05-16"
+  - "2022-05-17"
+  - "2022-05-18"
+  - "2022-05-19"
+  - "2022-05-20"
+  - "2022-05-21"
+  - "2022-05-22"
+  - "2022-05-23"
+  - "2022-05-24"
+  - "2022-05-25"
+  - "2022-05-26"
+  - "2022-05-27"
+  - "2022-05-28"
+  - "2022-05-29"
+  - "2022-05-30"
 
 products:
   LAI:
@@ -49,10 +65,17 @@ paths:
   output_dir: "../data/NPP_processed_inputs/"
   npp_output_dir: "../NPP_outputs/"
 
-  LAI_UGT_path: "../data/NPP_inputs/CLMS_products/VI_20220510T104621_S2A_T31UGT-010m_V101_LAI_FIXED_Qgis.tif"
-  LAI_UFT_path: "../data/NPP_inputs/CLMS_products/VI_20220510T104621_S2A_T31UFT-010m_V101_LAI_FIXED_Qgis.tif"
-  FAPAR_UGT_path: "../data/NPP_inputs/CLMS_products/VI_20220510T104621_S2A_T31UGT-010m_V101_FAPAR_FIXED_Qgis.tif"
-  FAPAR_UFT_path: "../data/NPP_inputs/CLMS_products/VI_20220510T104621_S2A_T31UFT-010m_V101_FAPAR_FIXED_Qgis.tif"
+  generic_LAI_FAPAR_path: "../data/LAI_FAPAR/"
+
+  # LAI_UGT_path: "../data/NPP_inputs/CLMS_products/VI_20220510T104621_S2A_T31UGT-010m_V101_LAI_FIXED_Qgis.tif"
+  # LAI_UFT_path: "../data/NPP_inputs/CLMS_products/VI_20220510T104621_S2A_T31UFT-010m_V101_LAI_FIXED_Qgis.tif"
+  # FAPAR_UGT_path: "../data/NPP_inputs/CLMS_products/VI_20220510T104621_S2A_T31UGT-010m_V101_FAPAR_FIXED_Qgis.tif"
+  # FAPAR_UFT_path: "../data/NPP_inputs/CLMS_products/VI_20220510T104621_S2A_T31UFT-010m_V101_FAPAR_FIXED_Qgis.tif"
+
+  LAI_UGT_path: "../data/LAI_FAPAR_temporal_filled/LAI_T31UFT_2022-05-10_filled_temporal.tiff"
+  LAI_UFT_path: "../data/LAI_FAPAR_temporal_filled/LAI_T31UFT_2022-05-10_filled_temporal.tiff"
+  FAPAR_UGT_path: "../data/LAI_FAPAR_temporal_filled/FAPAR_T31UFT_2022-05-10_filled_temporal.tiff"
+  FAPAR_UFT_path: "../data/LAI_FAPAR_temporal_filled/FAPAR_T31UGS_2022-05-10_filled_temporal.tiff"
 
   temp_nc_path: "../data/NPP_inputs/Temps/single_level_2m_daily_mean_temp_2022_NL_ERA5.nc"
   ssrd_nc_path: "../data/NPP_inputs/Temps/hourly_srrd_may_2022_netherlands.nc"
@@ -60,19 +83,6 @@ paths:
   estk_full_path: "../data/NPP_inputs/ESTK_kaarten/NL_2022_10m.tif"
 
   conversion_table_path: "../data/conversion_tables/25-04-15_conversietabel_MODIS_ESTK_LUTable_voorlopig.xlsx"
-
-products:
-  LAI:
-    tiles: ["${paths.LA I_UGT_path}", "${paths.LAI_UFT_path}"]
-  FAPAR:
-    tiles: ["${paths.FAPAR_UGT_path}", "${paths.FAPAR_UFT_path}"]
-
-dates:
-  - "2022-05-10"
-  - "2022-05-11"
-  - "2022-05-12"
-  - "2022-05-13"
-  - "2022-05-14"
 
 npp:
   month_slice:

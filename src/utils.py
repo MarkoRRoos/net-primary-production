@@ -3,6 +3,8 @@ import yaml
 import rasterio
 from pathlib import Path
 import logging
+import numpy as np
+import xarray as xr
 
 logger = logging.getLogger(__name__)
 
@@ -46,9 +48,33 @@ def ensure_path_exists(path):
         print(f"Directory already exists: {path}")
 
 
-def load_config(config_path=None): #TODO: accidentally made two of these functions, remove one
+def load_config(config_path=None): 
     if config_path is None:
         config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
+        print(config_path)
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
+
+def summarize_dataarray(da: xr.DataArray) -> dict:
+    """
+    Summarize an xarray.DataArray with basic statistics.
+
+    Args:
+        da: xarray.DataArray
+
+    Returns:
+        Dictionary with min, max, mean, std, zero count, NaN count, total count.
+    """
+    values = da.values
+    summary = {
+        "min": float(np.nanmin(values)),
+        "max": float(np.nanmax(values)),
+        "mean": float(np.nanmean(values)),
+        "std": float(np.nanstd(values)),
+        "zero_count": int(np.sum(values == 0)),
+        "nan_count": int(np.sum(np.isnan(values))),
+        "total_count": values.size,
+        "nonzero_count": int(np.sum(values != 0)),
+    }
+    return summary
