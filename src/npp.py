@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def compute_npp(
-    lai_path: Path,
+    #lai_path: Path,
     fapar_path: Path,
     temp_path: Path,
     ssrd_path: Path,
@@ -57,6 +57,9 @@ def compute_npp(
     temp = rxr.open_rasterio(temp_path, masked=True).squeeze()
     ssrd = rxr.open_rasterio(ssrd_path, masked=True).squeeze()
     estk = rxr.open_rasterio(estk_path, masked=True).squeeze()
+
+    fraction_of_PAR = 0.45  # Directly from Vito methodology page 44
+    cue = 0.5  # Carbon Use Efficiency, assumed constant
 
     # Convert temp from Kelvin to Celsius if median value > 100
     median_temp = float(np.nanmedian(temp.values))
@@ -115,21 +118,20 @@ def compute_npp(
         temp_masked = temp.where(mask)
         fapar_masked = fapar.where(mask)
         ssrd_masked = ssrd.where(mask)
+        lai_masked = lai.where(mask)
 
         # Temperature factor computation (bounded by T_min and T_max)
-        #temp_factor = ((temp_masked - t_min) * (t_max - temp_masked)) / ((t_max - t_min) ** 2) #The problem must occur here
         temp_factor = ((temp_masked - t_min) * (fake_max - temp_masked)) / ((t_max - t_min) ** 2) 
-        # print("temp min & max",temp_masked.min(), temp_masked.max())
         temp_factor = temp_factor.clip(min=0)
-        # print(f"Temp min/max: {float(temp.min())}, {float(temp.max())}")
-        # print(f"T_min/T_max from conversion table: {t_min}, {t_max}")
-        # print(f"Temp factor min/max: {float(temp_factor.min())}, {float(temp_factor.max())}")
 
 
         # Compute GPP and then NPP
-        gpp = eps_max * fapar_masked * ssrd_masked #TODO: add LAI and full formula
-        npp_class = gpp * temp_factor
-
+        #gpp = eps_max * fapar_masked * ssrd_masked 
+        #npp_class = gpp * temp_factor
+        #Vito Methodology 
+        gdmp = ssrd_masked * fraction_of_PAR * fapar_masked * eps_max * temp_factor #TODO: add Normalized CO2 fertalization effect
+        dmp = gdmp * cue
+        npp_class = dmp * 0.5 * 0.1 # Conversion from kgDM/ha/day to gC/m2/day TODO: Is this still correct as we are using different resolutions
         # Insert class-specific NPP values into result raster
         npp_result = npp_result.where(~mask, npp_class)
 
