@@ -12,7 +12,11 @@
 .venv/
 *.twf
 *.cpg
-data/*
-# Ignore Python caches and checkpoints
+
+
 __pycache__/
 .ipynb_checkpoints/
+
+
+data/*
+#TODO: ignore entire data folder 
